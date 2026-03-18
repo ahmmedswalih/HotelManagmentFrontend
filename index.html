@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Lumière — Hotel Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #b8892a;
+    --gold-light: #d4a94e;
+    --gold-dim: #e8d5a8;
+    --gold-bg: #fdf8ee;
+    --bg: #f7f7f5;
+    --bg-panel: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #f5f4f0;
+    --border: #e8e6df;
+    --border-gold: rgba(184,137,42,0.3);
+    --text-primary: #1a1915;
+    --text-secondary: #5c5a52;
+    --text-muted: #9c9a90;
+    --red: #c0392b;
+    --green: #1e7e4a;
+    --blue: #1a6fa8;
+    --amber: #c07800;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+    --radius: 8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 248px;
+    min-height: 100vh;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar-logo {
+    padding: 28px 22px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .hotel-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+
+  .sidebar-logo .tagline {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 14px 0;
+    overflow-y: auto;
+  }
+
+  .nav-section-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 22px 5px;
+    font-weight: 500;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 22px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    margin: 1px 0;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    color: var(--gold);
+    border-left-color: var(--gold);
+    background: var(--gold-bg);
+    font-weight: 500;
+  }
+
+  .nav-item .icon {
+    font-size: 15px;
+    width: 20px;
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  .nav-item.active .icon { opacity: 1; }
+
+  .sidebar-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ===== MAIN ===== */
+  .main {
+    margin-left: 248px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .topbar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    font-weight: 400;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .topbar-date {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .admin-badge {
+    background: var(--gold-bg);
+    border: 1px solid var(--border-gold);
+    color: var(--gold);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  /* API status */
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .api-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: background 0.3s;
+  }
+  .api-dot.connected { background: var(--green); }
+  .api-dot.error { background: var(--red); }
+
+  .content { padding: 26px 28px; flex: 1; }
+
+  /* ===== PAGES ===== */
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ===== STATS ===== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--border-gold);
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    opacity: 0.6;
+  }
+
+  .stat-label {
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 300;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+  .stat-icon {
+    position: absolute;
+    right: 16px; top: 14px;
+    font-size: 26px;
+    opacity: 0.07;
+    color: var(--gold);
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafaf8;
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .card-body { padding: 18px 20px; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 8px 18px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn-gold {
+    background: var(--gold);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(184,137,42,0.3);
+  }
+  .btn-gold:hover { background: var(--gold-light); box-shadow: 0 3px 12px rgba(184,137,42,0.4); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-gold);
+    color: var(--gold);
+  }
+  .btn-outline:hover { background: var(--gold-bg); }
+
+  .btn-danger {
+    background: #fff1f0;
+    border: 1px solid #ffc9c5;
+    color: var(--red);
+  }
+  .btn-danger:hover { background: #ffe4e2; }
+
+  .btn-success {
+    background: #f0faf4;
+    border: 1px solid #b7e5c8;
+    color: var(--green);
+  }
+  .btn-success:hover { background: #ddf2e8; }
+
+  .btn-sm { padding: 5px 11px; font-size: 11.5px; border-radius: 6px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+  thead th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+    background: #fafaf8;
+  }
+
+  tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0efe9;
+    color: var(--text-secondary);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover td { background: var(--bg-hover); }
+  tbody tr:last-child td { border-bottom: none; }
+  .td-name { color: var(--text-primary); font-weight: 500; }
+
+  /* ===== BADGES ===== */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+  }
+  .badge-green  { background: #edfaf3; color: #1e7e4a; border: 1px solid #b5e5cb; }
+  .badge-red    { background: #fff1f0; color: #c0392b; border: 1px solid #ffc9c5; }
+  .badge-amber  { background: #fffbeb; color: #c07800; border: 1px solid #fde9a0; }
+  .badge-blue   { background: #eff7ff; color: #1a6fa8; border: 1px solid #b3d9f7; }
+  .badge-gold   { background: var(--gold-bg); color: var(--gold); border: 1px solid var(--border-gold); }
+
+  /* ===== FORMS ===== */
+  .form-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-full   { grid-column: 1 / -1; }
+  .form-group  { display: flex; flex-direction: column; gap: 6px; }
+
+  label {
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  input, select, textarea {
+    background: #fafaf8;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,137,42,0.1);
+    background: #fff;
+  }
+
+  select option { background: #fff; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .form-actions { display: flex; gap: 10px; padding-top: 10px; }
+
+  /* ===== PAGE HEADER ===== */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+
+  .page-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 300;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+
+  .page-header p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+    font-weight: 400;
+  }
+
+  .tab:hover { color: var(--text-primary); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 500; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,18,14,0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.22s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(0.96) translateY(-8px); }
+    to   { opacity:1; transform:scale(1)    translateY(0); }
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafaf8;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  .modal-close {
+    background: #f0efe9;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text-primary); }
+
+  .modal-body { padding: 24px; }
+
+  /* ===== ROOM GRID ===== */
+  .room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+  }
+
+  .room-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .room-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .room-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .room-card.status-available::before  { background: #1e7e4a; }
+  .room-card.status-occupied::before   { background: #c0392b; }
+  .room-card.status-maintenance::before{ background: #c07800; }
+  .room-card.status-reserved::before   { background: #1a6fa8; }
+
+  .room-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 300;
+    color: var(--text-primary);
+  }
+
+  .room-type-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .room-price { font-size: 13px; color: var(--gold); margin-top: 8px; font-weight: 500; }
+
+  /* ===== MISC ===== */
+  .stars { color: var(--gold); font-size: 15px; letter-spacing: 1.5px; }
+
+  .search-bar { display: flex; gap: 10px; margin-bottom: 18px; }
+  .search-bar input { flex: 1; }
+
+  .alert {
+    padding: 11px 15px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid;
+  }
+  .alert-success { background: #edfaf3; border-color: #b5e5cb; color: var(--green); }
+  .alert-error   { background: #fff1f0; border-color: #ffc9c5; color: var(--red); }
+  .alert-info    { background: #eff7ff; border-color: #b3d9f7; color: var(--blue); }
+  .alert-warning { background: #fffbeb; border-color: #fde9a0; color: var(--amber); }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  .detail-list { display: flex; flex-direction: column; }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 9px 0;
+    border-bottom: 1px solid #f0efe9;
+    align-items: center;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+  .detail-val { color: var(--text-primary); font-weight: 400; }
+
+  .notif-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #c0392b;
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #f0efe9; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--text-primary);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.toast-error { background: var(--red); }
+  .toast.toast-success { background: var(--green); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-muted);
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; opacity: 0.25; }
+  .empty-state p { font-size: 13px; }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(184,137,42,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-row td {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="hotel-name">Grand Lumière</div>
+    <div class="tagline">Hotel Management</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard', this)">
+      <span class="icon">◈</span> Dashboard
+    </div>
+
+    <div class="nav-section-label">Guests</div>
+    <div class="nav-item" data-page="guests" onclick="navigate('guests', this)">
+      <span class="icon">◎</span> Guest Profiles
+    </div>
+    <div class="nav-item" data-page="feedback" onclick="navigate('feedback', this)">
+      <span class="icon">◇</span> Feedback
+    </div>
+
+    <div class="nav-section-label">Rooms</div>
+    <div class="nav-item" data-page="rooms" onclick="navigate('rooms', this)">
+      <span class="icon">▦</span> Room Management
+    </div>
+    <div class="nav-item" data-page="maintenance" onclick="navigate('maintenance', this)">
+      <span class="icon">⚙</span> Maintenance <span class="notif-dot" id="maint-notif"></span>
+    </div>
+
+    <div class="nav-section-label">Bookings</div>
+    <div class="nav-item" data-page="bookings" onclick="navigate('bookings', this)">
+      <span class="icon">◉</span> Reservations
+    </div>
+    <div class="nav-item" data-page="history" onclick="navigate('history', this)">
+      <span class="icon">◎</span> Booking History
+    </div>
+    <div class="nav-item" data-page="cancellations" onclick="navigate('cancellations', this)">
+      <span class="icon">✕</span> Cancellations
+    </div>
+
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" data-page="payments" onclick="navigate('payments', this)">
+      <span class="icon">◈</span> Payments & Billing
+    </div>
+  </nav>
+  <div class="sidebar-footer">Admin · Front Desk · v3.0</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="api-status">
+        <span class="api-dot" id="api-dot"></span>
+        <span id="api-label">Connecting…</span>
+      </div>
+      <span class="topbar-date" id="current-date"></span>
+      <span class="admin-badge">◈ Admin</span>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1>Good morning, Manager</h1>
+          <p>Here's what's happening at Grand Lumière today</p>
+        </div>
+        <button class="btn btn-outline" onclick="renderDashboard()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">◎</div><div class="stat-label">Total Guests</div><div class="stat-value" id="stat-guests">—</div><div class="stat-sub">Registered profiles</div></div>
+        <div class="stat-card"><div class="stat-icon">▦</div><div class="stat-label">Rooms Available</div><div class="stat-value" id="stat-available">—</div><div class="stat-sub">Ready for booking</div></div>
+        <div class="stat-card"><div class="stat-icon">◉</div><div class="stat-label">Active Bookings</div><div class="stat-value" id="stat-bookings">—</div><div class="stat-sub">Total reservations</div></div>
+        <div class="stat-card"><div class="stat-icon">₹</div><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div><div class="stat-sub">Completed payments</div></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Bookings</div><button class="btn btn-outline btn-sm" onclick="navigate('bookings', document.querySelector('[data-page=bookings]'))">View All</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Guest</th><th>Room</th><th>Check-in</th><th>Status</th></tr></thead><tbody id="dashboard-bookings"><tr class="loading-row"><td colspan="4"><span class="spinner"></span> Loading…</td></tr></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Room Occupancy</div></div>
+          <div class="card-body"><div id="room-summary"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Payments</div><button class="btn btn-outline btn-sm" onclick="navigate('payments', document.querySelector('[data-page=payments]'))">View All</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Guest</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody id="dashboard-payments"><tr class="loading-row"><td colspan="4"><span class="spinner"></span></td></tr></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Maintenance Alerts</div></div>
+          <div class="card-body" id="maintenance-alerts"><div class="empty-state"><span class="spinner"></span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUESTS -->
+    <div class="page" id="page-guests">
+      <div class="page-header">
+        <div><h1>Guest Profiles</h1><p>Manage all registered guests</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-guest')">+ Add Guest</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search by name, email or phone…" id="guest-search" oninput="filterGuests()">
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Proof Type</th><th>Proof No.</th><th>Actions</th></tr></thead>
+          <tbody id="guests-table"><tr class="loading-row"><td colspan="7"><span class="spinner"></span> Loading…</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="page" id="page-feedback">
+      <div class="page-header">
+        <div><h1>Guest Feedback</h1><p>Ratings and reviews</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-feedback')">+ Add Feedback</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Guest</th><th>Rating</th><th>Comment</th><th>Date</th></tr></thead>
+          <tbody id="feedback-table"><tr class="loading-row"><td colspan="5"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div class="page" id="page-rooms">
+      <div class="page-header">
+        <div><h1>Room Management</h1><p>View and manage all hotel rooms</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-room')">+ Add Room</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchRoomTab('grid', this)">Room Grid</div>
+        <div class="tab" onclick="switchRoomTab('list', this)">List View</div>
+        <div class="tab" onclick="switchRoomTab('facilities', this)">Facilities</div>
+      </div>
+      <div class="tab-content active" id="room-tab-grid"><div class="room-grid" id="rooms-grid"></div></div>
+      <div class="tab-content" id="room-tab-list">
+        <div class="card"><div class="table-wrap"><table><thead><tr><th>Room No.</th><th>Type</th><th>Floor</th><th>Price/Night</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rooms-table"></tbody></table></div></div>
+      </div>
+      <div class="tab-content" id="room-tab-facilities">
+        <div class="card"><div class="table-wrap"><table><thead><tr><th>Room No.</th><th>Type</th><th>Facilities</th></tr></thead><tbody id="facilities-table"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- MAINTENANCE -->
+    <div class="page" id="page-maintenance">
+      <div class="page-header">
+        <div><h1>Room Maintenance</h1><p>Track and manage maintenance issues</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-maintenance')">+ Log Issue</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Room</th><th>Issue</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="maintenance-table"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="page" id="page-bookings">
+      <div class="page-header">
+        <div><h1>Reservations</h1><p>Manage all room bookings</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-booking')">+ New Booking</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="bookings-table"><tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="page-history">
+      <div class="page-header"><div><h1>Booking History</h1><p>Complete status log</p></div></div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Booking</th><th>Guest</th><th>Room</th><th>Status</th><th>Date</th><th>Remarks</th></tr></thead>
+          <tbody id="history-table"><tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANCELLATIONS -->
+    <div class="page" id="page-cancellations">
+      <div class="page-header">
+        <div><h1>Booking Cancellations</h1><p>View cancelled reservations</p></div>
+        <button class="btn btn-danger" onclick="openModal('modal-add-cancel')">+ Cancel Booking</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Booking</th><th>Guest</th><th>Room</th><th>Reason</th><th>Date</th><th>Refund</th></tr></thead>
+          <tbody id="cancellations-table"><tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="page-header">
+        <div><h1>Payments & Billing</h1><p>Track all transactions</p></div>
+        <button class="btn btn-gold" onclick="openModal('modal-add-payment')">+ Record Payment</button>
+      </div>
+      <div class="stats-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom: 18px;">
+        <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="pay-total">—</div><div class="stat-sub">Completed payments</div></div>
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" id="pay-pending">—</div><div class="stat-sub">Awaiting payment</div></div>
+        <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value" id="pay-count">—</div><div class="stat-sub">Total records</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Booking</th><th>Guest</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="payments-table"><tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Guest -->
+<div class="modal-overlay" id="modal-add-guest">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Register New Guest</div><button class="modal-close" onclick="closeModal('modal-add-guest')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Full Name *</label><input type="text" id="g-name" placeholder="Guest full name"></div>
+        <div class="form-group"><label>Phone *</label><input type="text" id="g-phone" placeholder="10-digit number"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="g-email" placeholder="email@example.com"></div>
+        <div class="form-group form-full"><label>Address</label><textarea id="g-address" placeholder="Full address"></textarea></div>
+        <div class="form-group"><label>Proof Type *</label>
+          <select id="g-proof-type"><option>Aadhaar</option><option>Passport</option><option>Driving License</option><option>Voter ID</option><option>PAN Card</option></select>
+        </div>
+        <div class="form-group"><label>Proof Number *</label><input type="text" id="g-proof-no" placeholder="ID number"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" id="btn-add-guest" onclick="addGuest()">Register Guest</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-guest')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Feedback -->
+<div class="modal-overlay" id="modal-add-feedback">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Submit Feedback</div><button class="modal-close" onclick="closeModal('modal-add-feedback')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Guest *</label><select id="fb-guest"></select></div>
+        <div class="form-group"><label>Rating *</label>
+          <select id="fb-rating"><option value="5">★★★★★ Excellent</option><option value="4">★★★★☆ Good</option><option value="3">★★★☆☆ Average</option><option value="2">★★☆☆☆ Poor</option><option value="1">★☆☆☆☆ Terrible</option></select>
+        </div>
+        <div class="form-group form-full"><label>Comment</label><textarea id="fb-comment" placeholder="Guest's comment…"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" id="btn-add-feedback" onclick="addFeedback()">Submit</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-feedback')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Room -->
+<div class="modal-overlay" id="modal-add-room">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add New Room</div><button class="modal-close" onclick="closeModal('modal-add-room')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Room Number *</label><input type="text" id="r-num" placeholder="e.g. 305"></div>
+        <div class="form-group"><label>Floor</label><input type="number" id="r-floor" placeholder="3"></div>
+        <div class="form-group"><label>Room Type *</label>
+          <select id="r-type"><option>Single</option><option>Double</option><option>Deluxe</option><option>Suite</option><option>Presidential</option></select>
+        </div>
+        <div class="form-group"><label>Price / Night (₹) *</label><input type="number" id="r-price" placeholder="2500"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="r-status"><option>Available</option><option>Occupied</option><option>Maintenance</option><option>Reserved</option></select>
+        </div>
+        <div class="form-group form-full"><label>Facilities (comma separated)</label><input type="text" id="r-facilities" placeholder="WiFi, AC, TV, Mini Fridge"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" id="btn-add-room" onclick="addRoom()">Add Room</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-room')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Maintenance -->
+<div class="modal-overlay" id="modal-add-maintenance">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Log Maintenance Issue</div><button class="modal-close" onclick="closeModal('modal-add-maintenance')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Room *</label><select id="m-room"></select></div>
+        <div class="form-group form-full"><label>Issue Description *</label><textarea id="m-issue" placeholder="Describe the problem…"></textarea></div>
+        <div class="form-group"><label>Date *</label><input type="date" id="m-date"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="m-status"><option>Pending</option><option>In Progress</option><option>Resolved</option></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" id="btn-add-maint" onclick="addMaintenance()">Log Issue</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-maintenance')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Booking -->
+<div class="modal-overlay" id="modal-add-booking">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">New Reservation</div><button class="modal-close" onclick="closeModal('modal-add-booking')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Guest *</label><select id="b-guest"></select></div>
+        <div class="form-group form-full"><label>Room *</label><select id="b-room"></select></div>
+        <div class="form-group"><label>Check-in *</label><input type="date" id="b-checkin"></div>
+        <div class="form-group"><label>Check-out *</label><input type="date" id="b-checkout"></div>
+        <div class="form-group"><label>Adults</label><input type="number" id="b-adults" value="1" min="1"></div>
+        <div class="form-group"><label>Children</label><input type="number" id="b-children" value="0" min="0"></div>
+        <div class="form-group form-full"><label>Special Requests</label><textarea id="b-requests" placeholder="Any special requirements…"></textarea></div>
+      </div>
+      <div id="booking-price-preview" style="display:none; margin:10px 0;">
+        <div class="alert alert-info" id="booking-price-text"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="previewBookingPrice()">Preview Price</button>
+        <button class="btn btn-gold" id="btn-add-booking" onclick="addBooking()">Confirm Booking</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-booking')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Booking -->
+<div class="modal-overlay" id="modal-add-cancel">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Cancel Booking</div><button class="modal-close" onclick="closeModal('modal-add-cancel')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Booking *</label><select id="c-booking"></select></div>
+        <div class="form-group form-full"><label>Reason *</label><textarea id="c-reason" placeholder="Reason for cancellation…"></textarea></div>
+        <div class="form-group"><label>Cancel Date *</label><input type="date" id="c-date"></div>
+        <div class="form-group"><label>Refund Amount (₹)</label><input type="number" id="c-refund" placeholder="0.00"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-danger" id="btn-cancel-booking" onclick="cancelBooking()">Confirm Cancellation</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-cancel')">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Payment -->
+<div class="modal-overlay" id="modal-add-payment">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Record Payment</div><button class="modal-close" onclick="closeModal('modal-add-payment')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full"><label>Booking *</label><select id="p-booking"></select></div>
+        <div class="form-group"><label>Amount (₹) *</label><input type="number" id="p-amount" placeholder="0.00"></div>
+        <div class="form-group"><label>Payment Method *</label>
+          <select id="p-method"><option>Cash</option><option>Credit Card</option><option>Debit Card</option><option>UPI</option><option>Bank Transfer</option><option>Online</option></select>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select id="p-status"><option>Completed</option><option>Pending</option><option>Failed</option><option>Refunded</option></select>
+        </div>
+        <div class="form-group"><label>Transaction Ref</label><input type="text" id="p-ref" placeholder="TXN123456"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" id="btn-add-payment" onclick="addPayment()">Record Payment</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-add-payment')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Room Detail -->
+<div class="modal-overlay" id="modal-room-detail">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="room-detail-title">Room Details</div><button class="modal-close" onclick="closeModal('modal-room-detail')">✕</button></div>
+    <div class="modal-body" id="room-detail-body"></div>
+  </div>
+</div>
+
+<!-- Guest Detail -->
+<div class="modal-overlay" id="modal-guest-detail">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="guest-detail-title">Guest Profile</div><button class="modal-close" onclick="closeModal('modal-guest-detail')">✕</button></div>
+    <div class="modal-body" id="guest-detail-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
