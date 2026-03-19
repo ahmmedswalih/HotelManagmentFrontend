@@ -3,7 +3,7 @@
 // Connects to Node.js/Express backend at API_BASE
 // ============================================================
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://hotelmanagmentbackend.onrender.com/api';
 
 // ─── In-memory cache (refreshed on each page visit) ─────────
 let cache = {
