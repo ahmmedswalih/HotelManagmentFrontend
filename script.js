@@ -983,7 +983,38 @@ window.openModal = function(id) {
 };
 
 // ─── INIT ─────────────────────────────────────────────────────
+// ── Dynamic Greeting based on real time ──
+function updateGreeting() {
+  const hour = new Date().getHours(); // 0-23
+  let greeting = '';
+  let emoji = '';
 
+  if (hour >= 5 && hour < 12) {
+    greeting = 'Good Morning';
+    emoji = '🌅';
+  } else if (hour >= 12 && hour < 17) {
+    greeting = 'Good Afternoon';
+    emoji = '☀️';
+  } else if (hour >= 17 && hour < 21) {
+    greeting = 'Good Evening';
+    emoji = '🌆';
+  } else {
+    greeting = 'Good Night';
+    emoji = '🌙';
+  }
+
+  // Update the heading
+  const greetingEl = document.querySelector('#page-dashboard .page-header h1');
+  if (greetingEl) {
+    greetingEl.textContent = `${emoji} ${greeting}, Manager`;
+  }
+}
+
+// Run on load
+updateGreeting();
+
+// Update every minute in case page stays open across time change
+setInterval(updateGreeting, 60000);
 document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-IN', {
   weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
 });
